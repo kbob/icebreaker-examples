@@ -1,12 +1,12 @@
 /* ****************************************************************************
 -- (C) Copyright 2017 Kevin M. Hubbard @ Black Mess Labs - All rights reserved.
--- Source file: top.v                
+-- Source file: top.v
 -- Date:        December 2017
 -- Author:      khubbard
--- Description: Spartan3 Test Design 
+-- Description: Spartan3 Test Design
 -- Language:    Verilog-2001 and VHDL-1993
--- Simulation:  Mentor-Modelsim 
--- Synthesis:   Xilinst-XST 
+-- Simulation:  Mentor-Modelsim
+-- Synthesis:   Xilinst-XST
 -- License:     This project is licensed with the CERN Open Hardware Licence
 --              v1.2.  You may redistribute and modify this project under the
 --              terms of the CERN OHL v.1.2. (http://ohwr.org/cernohl).
@@ -29,7 +29,7 @@
 --      pmod_*_*<4> = data_enable
 --      pmod_*_*<5> = hsync
 --      pmod_*_*<6> = vsync
---      pmod_*_*<7> = nc  
+--      pmod_*_*<7> = nc
 --
 --
 --
@@ -55,7 +55,7 @@
 -- 0.1   12.14.17  khubbard Creation
 -- ***************************************************************************/
 `default_nettype none // Strictly enforce all nets to be declared
-                                                                                
+
 module top
 (
   input  CLK,
@@ -95,9 +95,9 @@ module top
 //-----------------------------------------------------------------------------
 SB_PLL40_PAD #(
   .DIVR(4'b0000),
-  // 40MHz ish to be exact it is 39.750MHz
+  // 40MHz ish to be exact it is 40.5MHz
   //.DIVF(7'b0110111), // 42MHz
-  .DIVF(7'b0110101), // 39.750MHz
+  .DIVF(7'b0110101), // 40.500MHz
   .DIVQ(3'b100),
   .FILTER_RANGE(3'b001),
   .FEEDBACK_PATH("SIMPLE"),
@@ -127,7 +127,7 @@ SB_PLL40_PAD #(
 // Flash an LED. Also control the VGA demos, toggle between color pattern and
 // either a bouncing ball or moving lines.
 //-----------------------------------------------------------------------------
-always @ ( posedge clk_40m_tree or posedge reset_loc ) begin : proc_led 
+always @ ( posedge clk_40m_tree or posedge reset_loc ) begin : proc_led
  if ( reset_loc == 1 ) begin
    random_num   <= 32'd0;
    led_cnt      <= 30'd0;
@@ -146,7 +146,7 @@ always @ ( posedge clk_40m_tree or posedge reset_loc ) begin : proc_led
      mode_bit <= 0;
    end else begin
      mode_bit <= 1;
-   end 
+   end
 
  end // clk+reset
 end // proc_led
@@ -175,7 +175,7 @@ vga_core u_vga_core
 
 // ----------------------------------------------------------------------------
 // Assign the PMOD(s) for either 3b or 12b HDMI Module from Black Mesa Labs
-// DDR Flop to Mirror pixel clock to TFP410 
+// DDR Flop to Mirror pixel clock to TFP410
 // ----------------------------------------------------------------------------
 //FDDRCPE u1_FDDRCPE
 //(
@@ -183,20 +183,20 @@ vga_core u_vga_core
 //  .CE  ( 1'b1           ),
 //  .CLR ( 1'b0           ), .PRE ( 1'b0      ),
 //  .D0  ( 1'b1           ), .D1  ( 1'b0      ),
-//  .Q   ( vga_ck         ) 
+//  .Q   ( vga_ck         )
 //);
 
 assign vga_ck = clk_40m_tree;
 
 // 3b for single-PMOD
-//assign {P1A1,   P1A2,   P1A3,   P1A4,   P1A7,   P1A8,   P1A9,   P1A10} = 
+//assign {P1A1,   P1A2,   P1A3,   P1A4,   P1A7,   P1A8,   P1A9,   P1A10} =
 //       {g[7],   vga_ck, vga_hs, 1'b0,   r[7],   b[7],   vga_de, vga_vs};
 
 
 // 12b for dual-PMOD
-assign {P1A1,   P1A2,   P1A3,   P1A4,   P1A7,   P1A8,   P1A9,   P1A10} = 
+assign {P1A1,   P1A2,   P1A3,   P1A4,   P1A7,   P1A8,   P1A9,   P1A10} =
        {r[7],   r[5],   g[7],   g[5],   r[6],   r[4],   g[6],   g[4]};
-assign {P1B1,   P1B2,   P1B3,   P1B4,   P1B7,   P1B8,   P1B9,   P1B10} = 
+assign {P1B1,   P1B2,   P1B3,   P1B4,   P1B7,   P1B8,   P1B9,   P1B10} =
        {b[7],   vga_ck, b[4],   vga_hs, b[6],   b[5],   vga_de, vga_vs};
 
 endmodule // top.v
